@@ -1,0 +1,20 @@
+{
+  "generator-plugin-wp": {
+    "name": "Extend WooCommerce",
+    "homepage": "https://www.extend.com",
+    "description": "WooCommerce plugin to connect Extend",
+    "version": "0.0.0",
+    "author": "Dustin Graham",
+    "authoremail": "dustin@extend.com",
+    "authorurl": "https://www.extend.com",
+    "license": "GPLv2",
+    "slug": "extend-woocommerce",
+    "classname": "Extend_WooCommerce",
+    "mainclassname": "Extend_WooCommerce",
+    "classprefix": "EWC_",
+    "prefix": "extend_woocommerce",
+    "year": 2021,
+    "currentVersionWP": "4.8.1",
+    "plugingenversion": "0.20.2"
+  }
+}

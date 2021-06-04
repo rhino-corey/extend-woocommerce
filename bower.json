@@ -1,0 +1,18 @@
+{
+  "name": "extend-woocommerce",
+  "description": "WooCommerce plugin to connect Extend",
+  "license": "GPLv2",
+  "authors": [
+    "Dustin Graham"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+  }
+}
