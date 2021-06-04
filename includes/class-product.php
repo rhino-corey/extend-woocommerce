@@ -39,7 +39,11 @@ class EWC_Product {
 	 * @since  0.0.0
 	 */
 	public function hooks() {
-		add_action('extend_product_sync', array( $this, 'main_product_sync' ));   
+		add_action('save_post_product', [$this, 'updateProduct'], 99, 3);
+		add_action('save_post_product_variation', [$this, 'updateProduct'], 99, 3);
+		add_action('woocommerce_save_product_variation', [$this, 'updateProduct']);
+
+		add_action('extend_product_sync', [$this, 'main_product_sync']);
 	}
 
 	//main_product_sync gets all products and passes into udateProduct function
@@ -52,16 +56,211 @@ class EWC_Product {
 
 		//forEach product create an Extend product
 		foreach ($products as $product) {
-			$this->debug_to_console($product->get_id());
+			$this->updateProduct($product->get_id());
 		};
 	}
+
+	public function updateProduct($id){
+
+		$data = $this->getProductData($id);
+
+		$exists = get_post_meta($id, '_extend_added', true);
+
+		if($exists){
+			$res = $this->plugin->remote_request('/products/'. $id, 'PUT',  $data);
+
+			if($res['response_code']=== 404){
+				$res = $this->plugin->remote_request('/products', 'POST', $data, ['upsert'=>true]);
+			}
+		}else{
+			$res = $this->plugin->remote_request('/products', 'POST', $data, ['upsert'=>true]);
+
+			if($res['response_code']=== 409 ){
+
+				update_post_meta($id, '_extend_added', true);
+
+				$res = $this->plugin->remote_request('/products/'. $id, 'PUT',  $data);
+			}
+
+
+		}
+
+
+	}
+
+
+	/**
+	 * @param $product mixed
+	 *
+	 * @return array
+	 */
+
+	private function getProductData($product = null){
+
+
+		if(is_numeric($product)){
+			$id = $product;
+			$product = wc_get_product($id);
+		}else{
+			$id = $product->get_id();
+		}
+
+		$image = get_the_post_thumbnail_url($id);
+		$title = $product->get_title();
+		if($product->get_parent_id()>0){
+			$parent = wc_get_product($product->get_parent_id());
+			$brand = $parent->get_attribute('pa_product-brand');
+			$description = $parent->get_short_description();
+			$description = $this->getPlain($description);
+			if(empty($description)){
+				$description = $parent->get_description();
+			}
+			if(empty($image)){
+				$image = get_the_post_thumbnail_url($product->get_parent_id());
+			}
+			$category = $this->getCategory($product->get_parent_id());
+			$title = $this->get_variation_title($product);
+		}else{
+			$brand = $product->get_attribute('pa_product-brand');
+			$description = $product->get_short_description();
+			$description = $this->getPlain($description);
+			if(empty($description)){
+				$description = $product->get_description();
+				$description = $this->getPlain($description);
+			}
+			$category = $this->getCategory($id);
+		}
+
+		$data = [
+		'referenceId'=>$id,
+		'brand'=>$brand,
+		'category'=>$category,
+		'description'=>substr($description, 0, 2000),
+		'enabled'=>$this->isEnabled($product),
+		'price'=>['currencyCode'=>'USD', 'amount'=> $product->get_price() * 100],
+		'title'=>$title,
+			'imageUrl'=>$image,
+			'identifiers'=>[
+				'sku'=>$product->get_sku()
+
+			]
+
+		];
+
+		$warranty =$this->getWarranty($id);
+		if(!empty($warranty)){
+			$data['mfrWarranty']=$warranty;
+		}
+
+
+		$upc = get_post_meta($id, '_cpf_upc', true);
+		if($upc && strpos($upc, '000000')===false ){
+			$data['identifiers']['upc'] = $upc;
+		}
+
+
+			$data['parentReferenceId'] = $product->get_parent_id();
+
+
+
+
+		return $data;
+		
+	}
+
+	private function getPlain($html){
+		$text = preg_replace( "/\n\s+/", "\n", rtrim(html_entity_decode(strip_tags($html))) );
+
+		return $text;
+
+	}
+
+
+		/**
+	 * @param $id
+	 *
+	 * @return string
+	 */
+
+	private function getCategory($id){
+		
+		$primary_cat = get_post_meta($id, '_yoast_wpseo_primary_product_cat', true);
+		
+		if($primary_cat && is_numeric($primary_cat)){
+			$term = get_term($primary_cat, 'product_cat');
+			if(is_object($term)){
+				return $term->name;
+			}
+
+		}
+
+			$cats = wc_get_product_category_list($id);
+
+			$cats = explode(',', $cats);
+
+			$cats = array_map(function($cat){
+				return strip_tags($cat);
+			}, $cats);
+			return implode(',', $cats);
+
+
+		
+	}
+
+	public function get_variation_title($variation){
+		$attributes = $variation->get_variation_attributes();
+		$atts = [];
+		foreach($attributes as $key=>$val){
+			$key = ucwords( str_replace('-', ' ',str_replace('attribute_', '', $key)));
+			$atts[] = $key .': ' . $val;
+		}
+
+		return $variation->get_title() . '(' . implode(', ', $atts) . ')';
+	}
+
 
 	function debug_to_console($data) {
 		$output = $data;
 		if (is_array($output))
 			$output = implode(',', $output);
 	
-		echo "console.log(" . $output . ");";
+		echo "<script>console.log('" . $output . "');</script>";
+	}
+
+		/**
+	 * @param $product WC_Product
+	 *
+	 * @return bool
+	 */
+	private function isEnabled($product){
+		$enabled = true;
+
+		if($product->get_status() !=='publish'){
+			return false;
+		}
+
+
+		$stock = $product->get_stock_status();
+		if($stock !== 'instock'){
+			return false;
+		}
+
+
+		$catonly = get_post_meta($product->get_id(), '_catalog_only', true);
+		if($catonly && $catonly!== null){
+			$enabled = false;
+		}
+		return $enabled;
+	}
+
+		/**
+	 * @param $id
+	 *
+	 * @return array
+	 */
+	private function getWarranty($id){
+
+		return [];
 	}
 
 }

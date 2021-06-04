@@ -177,6 +177,9 @@ final class Extend_WooCommerce {
 
 		$env = get_option('wc_extend_environment');
 
+		add_option('extend_products_synced', 'no');
+		
+
 		if($env === 'dev'){ 
 			$this->api_host = 'https://api-dev.helloextend.com';
 			$this->sdk_url = 'https://sdk.helloextend.com/extend-sdk-client/v1/dev/extend-sdk-client.min.js';
@@ -329,11 +332,26 @@ final class Extend_WooCommerce {
 			return;
 		}
 
+
+
 		// Load translated strings for plugin.
 		load_plugin_textdomain( 'extend-woocommerce', false, dirname( $this->basename ) . '/languages/' );
 
 		// Initialize plugin classes.
 		$this->plugin_classes();
+
+		add_action('admin_init', array( $this, 'after_woo_init' )); 
+
+	}
+
+	public function after_woo_init() {
+		if (isset($_GET['action'])) {
+			switch ($_GET['action']) {
+				case 'productsync':
+					do_action('extend_product_sync');
+					break;
+			}
+		}
 	}
 
 	/**
