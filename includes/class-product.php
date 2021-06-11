@@ -30,6 +30,7 @@ class EWC_Product {
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
+
 		$this->hooks();
 	}
 
@@ -39,51 +40,62 @@ class EWC_Product {
 	 * @since  0.0.0
 	 */
 	public function hooks() {
-		add_action('save_post_product', [$this, 'updateProduct'], 99, 3);
-		add_action('save_post_product_variation', [$this, 'updateProduct'], 99, 3);
-		add_action('woocommerce_save_product_variation', [$this, 'updateProduct']);
+		$isProductSyncEnabled = get_option('wc_extend_product_sync_enabled');
+		if($isProductSyncEnabled == 'yes'){
+			add_action('added_post_meta', [$this, 'addNewProduct'], 99, 3);
+			add_action('updated_post_meta', [$this, 'addNewProduct'], 99, 3);
 
-		add_action('extend_product_sync', [$this, 'main_product_sync']);
+			add_action('save_post_product_variation', [$this, 'updateProduct'], 99, 3);
+			add_action('woocommerce_save_product_variation', [$this, 'updateProduct']);
+			add_action('woocommerce_ajax_save_product_variations', [$this, 'save_variations']);
+		}
 	}
 
-	//main_product_sync gets all products and passes into udateProduct function
-	public function main_product_sync() {
-		$args = array(
-			'orderby'  => 'name',
-		);
-		//woocommerce get all products in order by name
-		$products = wc_get_products($args);
+	public function save_variations($product_id){
 
-		//forEach product create an Extend product
-		foreach ($products as $product) {
-			$this->updateProduct($product->get_id());
-		};
+		$product = wc_get_product($product_id);
+		$variations = $product->get_available_variations();
+
+		foreach($variations as $variation){
+			$variation_id = $variation['variation_id'];
+
+			$this->updateProduct($variation_id);
+		}
+
+	}
+
+	public function addNewProduct($metaId, $postId, $metaKey){
+		if ( $metaKey == '_edit_lock' ) {
+			if ( get_post_type( $postId ) == 'product' ) { // we've been editing a product 
+				$this->updateProduct($postId);
+			}
+		}
 	}
 
 	public function updateProduct($id){
+			
+			$data = $this->getProductData($id);
+			
+			$exists = get_post_meta($id, '_extend_added', true);
 
-		$data = $this->getProductData($id);
-
-		$exists = get_post_meta($id, '_extend_added', true);
-
-		if($exists){
-			$res = $this->plugin->remote_request('/products/'. $id, 'PUT',  $data);
-
-			if($res['response_code']=== 404){
-				$res = $this->plugin->remote_request('/products', 'POST', $data, ['upsert'=>true]);
-			}
-		}else{
-			$res = $this->plugin->remote_request('/products', 'POST', $data, ['upsert'=>true]);
-
-			if($res['response_code']=== 409 ){
-
-				update_post_meta($id, '_extend_added', true);
-
+			if($exists){
 				$res = $this->plugin->remote_request('/products/'. $id, 'PUT',  $data);
+
+				if($res['response_code']=== 404){
+					$res = $this->plugin->remote_request('/products', 'POST', $data, ['upsert'=>true]);
+				}
+			}else{
+				$res = $this->plugin->remote_request('/products', 'POST', $data, ['upsert'=>false]);
+
+				if($res['response_code']=== 409 ){
+
+					update_post_meta($id, '_extend_added', true);
+
+					$res = $this->plugin->remote_request('/products/'. $id, 'PUT',  $data);
+				}
+
+
 			}
-
-
-		}
 
 
 	}
@@ -131,13 +143,15 @@ class EWC_Product {
 			$category = $this->getCategory($id);
 		}
 
+		$this->plugin->write_log($product->get_price());
+
 		$data = [
 		'referenceId'=>$id,
 		'brand'=>$brand,
 		'category'=>$category,
 		'description'=>substr($description, 0, 2000),
 		'enabled'=>$this->isEnabled($product),
-		'price'=>['currencyCode'=>'USD', 'amount'=> $product->get_price() * 100],
+		'price'=>['currencyCode'=>'USD', 'amount'=> ((int)$product->get_price() * (int)100)],
 		'title'=>$title,
 			'imageUrl'=>$image,
 			'identifiers'=>[
@@ -219,13 +233,6 @@ class EWC_Product {
 	}
 
 
-	function debug_to_console($data) {
-		$output = $data;
-		if (is_array($output))
-			$output = implode(',', $output);
-	
-		echo "<script>console.log('" . $output . "');</script>";
-	}
 
 		/**
 	 * @param $product WC_Product

@@ -152,6 +152,22 @@ final class Extend_WooCommerce {
 	protected $store_id;
 
 	/**
+	 * Instance of EWC_Product_Integration
+	 *
+	 * @since0.0.0
+	 * @var EWC_Product_Integration
+	 */
+	protected $product_integration;
+
+	/**
+	 * Instance of EWC_Cart_Integration
+	 *
+	 * @since0.0.0
+	 * @var EWC_Cart_Integration
+	 */
+	protected $cart_integration;
+
+	/**
 	 * Creates or returns an instance of this class.
 	 *
 	 * @since   0.0.0
@@ -211,6 +227,8 @@ final class Extend_WooCommerce {
 		$this->cart = new EWC_Cart( $this );
 		$this->product = new EWC_Product( $this );
 		$this->admin = new EWC_Admin( $this );
+		$this->product_integration = new EWC_Product_Integration( $this );
+		$this->cart_integration = new EWC_Cart_Integration( $this );
 	} // END OF PLUGIN CLASSES FUNCTION
 
 	/**
@@ -224,6 +242,7 @@ final class Extend_WooCommerce {
 	 */
 	public function hooks() {
 		add_action( 'init', array( $this, 'init' ), 0 );
+		add_action('wp_enqueue_scripts', [$this, 'scripts']);
 	}
 
 /**
@@ -295,6 +314,14 @@ final class Extend_WooCommerce {
 
 	}
 
+	
+	public function scripts(){
+		wp_register_script('extend_script', $this->sdk_url);
+		wp_register_script('extend_product_integration_script', $this->url . 'assets/productIntegration.js', ['jquery', 'extend_script'], filemtime($this->path .'assets/productIntegration.js' ));
+		wp_register_script('extend_cart_integration_script', $this->url . 'assets/cartIntegration.js', ['jquery', 'extend_script'], filemtime($this->path .'assets/cartIntegration.js' ), true);
+	}
+
+
 	/**
 	 * Activate the plugin.
 	 *
@@ -354,6 +381,15 @@ final class Extend_WooCommerce {
 		}
 	}
 
+	public function write_log($log) {
+		if (true === WP_DEBUG) {
+			if (is_array($log) || is_object($log)) {
+				error_log(print_r($log, true));
+			} else {
+				error_log($log);
+			}
+		}
+	}
 	/**
 	 * Check if the plugin meets requirements and
 	 * disable it if they are not present.
@@ -458,6 +494,8 @@ final class Extend_WooCommerce {
 			case 'admin':
 			case 'store_id':
 			case 'env':
+			case 'product_integration':
+			case 'cart_integration':
 				return $this->$field;
 			default:
 				throw new Exception( 'Invalid ' . __CLASS__ . ' property: ' . $field );

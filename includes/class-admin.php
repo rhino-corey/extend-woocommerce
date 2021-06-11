@@ -97,6 +97,16 @@ class EWC_Admin {
 				'id'	  => 'wc_extend_modal_offers_enabled',
 			),
 			array(
+				'title'	  => __( 'Automated Product Sync', 'extend-woocommerce' ),
+				'type'    => 'checkbox',
+				'id'	  => 'wc_extend_product_sync_enabled',
+			),
+			array(
+				'title'	  => __( 'Automated Contract Creation/Refunding', 'extend-woocommerce' ),
+				'type'    => 'checkbox',
+				'id'	  => 'wc_extend_contracts_enabled',
+			),
+			array(
 				'title'   => __( 'Environment', 'wcpf' ),
 				'type'    => 'select',
 				'id'      => 'wc_extend_environment',
@@ -135,9 +145,7 @@ class EWC_Admin {
 				'desc_tip'    => true,
 			),
 			array( 'type' => 'sectionend', 'id' => 'wc_extend_defaults' ),
-		);
-		include dirname( __FILE__ ) . '/views/html-extend-options.php';
-		
+		);		
 		return $new_settings;
 	}
 }
