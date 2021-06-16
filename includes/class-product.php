@@ -143,8 +143,6 @@ class EWC_Product {
 			$category = $this->getCategory($id);
 		}
 
-		$this->plugin->write_log($product->get_price());
-
 		$data = [
 		'referenceId'=>$id,
 		'brand'=>$brand,
