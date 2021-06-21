@@ -27,19 +27,21 @@ jQuery( document.body ).on( 'updated_cart_totals', function(){
         let ref_id =  jQuery(val).data('covered');
         let qty = jQuery(val).parents('.cart_item').find('input.qty').val();
 
-        if(Extend.buttons.instance('#'+this.id)){
-            Extend.buttons.instance('#'+this.id).destroy();
+
+        if(Extend.buttons.instance('#'+val.id)){
+            Extend.buttons.instance('#'+val.id).destroy();
         }
+
         jQuery.post(WCCartExtend.ajaxurl, {action: "get_cart"})
             .then(function(cart){
-                window.WCCartExtend.cart = cart;
+                window.WCCartExtend.cart = JSON.parse(cart);
 
                 if(warrantyAlreadyInCheckout(ref_id, window.WCCartExtend.cart)){
                     return;
                 }
-                
+
                 /** initialize offer */
-                Extend.buttons.renderSimpleOffer('#'+this.id, {
+                Extend.buttons.renderSimpleOffer('#'+val.id, {
                     referenceId: ref_id,
                     onAddToCart:
                         function({ plan, product }) {

@@ -113,7 +113,6 @@ class EWC_Admin {
 				'options' => array(
 								'live' => __("LIVE"),
 								'demo' => __("DEMO"),
-								'dev' => __("DEV"),
 				),
 				'default' => 'live',
 			),

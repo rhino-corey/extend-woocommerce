@@ -20,6 +20,7 @@ class EWC_Cart {
 	 * @var   Extend_WooCommerce
 	 */
 	protected $plugin = null;
+	protected $warranty_product_id = null;
 
 	/**
 	 * Constructor.
@@ -31,6 +32,7 @@ class EWC_Cart {
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 		$this->hooks();
+		$this->warranty_product_id = get_option('wc_extend_product_id');
 	}
 
 	/**

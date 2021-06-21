@@ -196,10 +196,7 @@ final class Extend_WooCommerce {
 		add_option('extend_products_synced', 'no');
 		
 
-		if($env === 'dev'){ 
-			$this->api_host = 'https://api-dev.helloextend.com';
-			$this->sdk_url = 'https://sdk.helloextend.com/extend-sdk-client/v1/dev/extend-sdk-client.min.js';
-		}elseif($env === 'demo'){
+		if($env === 'demo'){
 			$this->api_host = 'https://api-demo.helloextend.com';
 			$this->sdk_url = 'https://sdk.helloextend.com/extend-sdk-client/v1/extend-sdk-client.min.js';
 		}else {
