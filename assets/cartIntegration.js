@@ -3,9 +3,11 @@ let product_id = window.WCCartExtend.id;
 let product_ids = window.WCCartExtend.ids;
 let environment = window.WCCartExtend.environment;
 let warranty_prod_id = window.WCCartExtend.warranty_prod_id;
+let extend_cart_offers_enabled = window.WCCartExtend.extend_cart_offers_enabled
 
 
- function warrantyAlreadyInCheckout (variantId, cart) {
+
+function warrantyAlreadyInCheckout (variantId, cart) {
     var checkoutItems = Object.values(cart['cart_contents']);
     const extendWarranties = checkoutItems.filter(function (lineItem) {
       //filter through the customAttributes and grab the referenceId
@@ -20,7 +22,7 @@ let warranty_prod_id = window.WCCartExtend.warranty_prod_id;
       );
     });
     return extendWarranties.length > 0;
-  }
+}
 
 jQuery( document.body ).on( 'updated_cart_totals', function(){
     jQuery('.cart-extend-offer').each(function(ix, val){
@@ -36,7 +38,7 @@ jQuery( document.body ).on( 'updated_cart_totals', function(){
             .then(function(cart){
                 window.WCCartExtend.cart = JSON.parse(cart);
 
-                if(warrantyAlreadyInCheckout(ref_id, window.WCCartExtend.cart)){
+                if(warrantyAlreadyInCheckout(ref_id, window.WCCartExtend.cart) || extend_cart_offers_enabled === 'no'){
                     return;
                 }
 
@@ -54,8 +56,6 @@ jQuery( document.body ).on( 'updated_cart_totals', function(){
                                     quantity: qty,
                                     extendData: plan
                                 };
-
-                                console.log(plan, product);
                                 jQuery.post( wc_add_to_cart_params.wc_ajax_url.toString().replace( '%%endpoint%%', 'add_to_cart' ), data, function( response ) {
                                     if (!response) {
                                         return;

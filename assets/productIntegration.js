@@ -4,6 +4,7 @@ let product_id = window.WCExtend.id;
 let product_ids = window.WCExtend.ids;
 let environment = window.WCExtend.environment;
 let extend_modal_offers_enabled = window.WCExtend.extend_modal_offers_enabled
+let extend_pdp_offers_enabled = window.WCExtend.extend_pdp_offers_enabled
 
 
 
@@ -13,6 +14,11 @@ jQuery(document).ready(function(){
         environment: environment ,
         referenceIds: product_ids
     });
+
+    if(extend_pdp_offers_enabled === 'no'){
+        var extendOffer = document.querySelector('#extend-offer')
+        extendOffer.style.display = 'none';
+    }
 
     if(product_type ==='simple'){
         Extend.buttons.render('#extend-offer', {

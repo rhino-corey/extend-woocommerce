@@ -146,6 +146,12 @@ final class Extend_WooCommerce {
 	 */
 	protected $admin;
 
+	/*
+	 * api_host = extend api URL dependant on environment
+	 * env = demo or production extend environment
+	 * api_key = api key dependant on environment
+	 * store_id = extend store id dependant on environment
+	*/
 	protected $api_host = '';
 	protected $env = '';
 	protected $api_key ='';

@@ -60,11 +60,11 @@ class EWC_Product_Integration {
 			$ids = [$id];
 		}
 		if($store_id){
-			if($extend_enabled === 'yes' && $extend_pdp_offers_enabled === 'yes') {
+			if($extend_enabled === 'yes') {
 				$extend_modal_offers_enabled = get_option('wc_extend_modal_offers_enabled');
 				wp_enqueue_script('extend_script');
 				wp_enqueue_script('extend_product_integration_script');
-				wp_localize_script('extend_product_integration_script', 'WCExtend', compact('store_id', 'id', 'type', 'ids', 'environment', 'extend_modal_offers_enabled'));
+				wp_localize_script('extend_product_integration_script', 'WCExtend', compact('store_id', 'id', 'type', 'ids', 'environment', 'extend_modal_offers_enabled', 'extend_pdp_offers_enabled'));
 				echo "<div id=\"extend-offer\"></div>";
 			}
 		}

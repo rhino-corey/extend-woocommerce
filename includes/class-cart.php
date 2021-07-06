@@ -69,7 +69,6 @@ class EWC_Cart {
 			$item->add_meta_data('Covered Product', $covered_title);
 
 		}
-
 	}
 
 	public function checkout_details($data, $cart_item){
@@ -85,11 +84,11 @@ class EWC_Cart {
 			$sku = $cart_item['extendData']['planId'];
 			$covered_title = $covered->get_title();
 			$data[] =[
-				'key'=>'Covered Product',
+				'key'=>'Product',
 				'value'=>$covered_title
 			];
 			$data[] =[
-				'key'=>'Coverage Term',
+				'key'=>'Term',
 				'value'=>$term . ' Months'
 			];
 
