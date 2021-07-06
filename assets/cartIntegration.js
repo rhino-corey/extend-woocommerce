@@ -79,6 +79,14 @@ jQuery(document).ready(function() {
         referenceIds: product_ids
     });
 
+    jQuery('.cart_item').each(function(ix, val){
+        var title = jQuery(val).find('.product-name');
+        var image = jQuery(val).find('.product-thumbnail')
+        if(title.text().indexOf('Extend Protection Plan') > -1){
+            image.css('pointer-events', 'none')
+        }
+    })
+
 
     jQuery('.cart-extend-offer').each(function(ix, val){
         let ref_id =  jQuery(val).data('covered');
