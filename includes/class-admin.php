@@ -135,7 +135,7 @@ class EWC_Admin {
 				'desc_tip'    => true,
 			),
 			array(
-				'name' => __( 'Coverage Product Id', 'extend-woocommerce' ),
+				'name' => __( 'Extend Product Id', 'extend-woocommerce' ),
 				'type'        => 'text',
 				'desc'        => __( 'This is the product id for the Extend Warranty product', 'extend-woocommerce' ),
 				'default'     => '',
