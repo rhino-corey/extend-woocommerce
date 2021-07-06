@@ -41,11 +41,14 @@ class EWC_Contracts {
 	 * @since  0.0.0
 	 */
 	public function hooks() {
-		add_action('woocommerce_order_status_completed', [$this, 'maybe_send_contract']);
-		add_action('woocommerce_order_fully_refunded', [$this, 'process_full_refund']);
-		add_action('woocommerce_order_status_refunded', [$this, 'process_full_refund']);
-		add_action('woocommerce_create_refund', [$this, 'process_partial_refund'], 10, 2);
-		add_action('add_meta_boxes', [$this, 'meta_boxes']);
+		$isContractsEnabled = get_option('wc_extend_contracts_enabled');
+		if($isContractsEnabled == 'yes') {
+			add_action('woocommerce_order_status_completed', [$this, 'maybe_send_contract']);
+			add_action('woocommerce_order_fully_refunded', [$this, 'process_full_refund']);
+			add_action('woocommerce_order_status_refunded', [$this, 'process_full_refund']);
+			add_action('woocommerce_create_refund', [$this, 'process_partial_refund'], 10, 2);
+			add_action('add_meta_boxes', [$this, 'meta_boxes']);
+		}
 	}
 
 	public function extend_metabox(){
@@ -87,14 +90,11 @@ class EWC_Contracts {
 			'shop_order', 'side');
 	}
 
-		/**
+	/**
 	 * @param $refund WC_Order_Refund
 	 * @param $args array
 	 */
 	public function process_partial_refund($refund, $args){
-
-
-
 
 		$order_id = $refund->get_parent_id();
 
@@ -116,7 +116,6 @@ class EWC_Contracts {
 			}
 			update_post_meta($order_id, '_extend_refund_data', $refund_details);
 		}
-
 
 	}
 
@@ -220,18 +219,14 @@ class EWC_Contracts {
 
 					];
 
+					$res =	$this->plugin->remote_request( '/contracts', 'POST', $contract_data );
 
-
-				$res =	$this->plugin->remote_request( '/contracts', 'POST', $contract_data );
-
-				if(intval($res['response_code']) === 201){
-					$item->add_meta_data("Extend Status", $res['response_body']->status);
-					$contract_ids[$item_id]=	$res['response_body']->id;
-				}
-
+					if(intval($res['response_code']) === 201){
+						$item->add_meta_data("Extend Status", $res['response_body']->status);
+						$contract_ids[$item_id]=	$res['response_body']->id;
+					}
 
 				}
-
 
 			}
 
@@ -246,8 +241,6 @@ class EWC_Contracts {
 	
 
 	public function process_full_refund($order_id){
-
-
 
 		$contracts = get_post_meta($order_id, '_extend_contracts', true);
 
