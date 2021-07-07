@@ -42,6 +42,8 @@ class EWC_Product_Integration {
 		add_action('woocommerce_before_add_to_cart_form', [$this, 'product_offer']);
 	}
 
+	// product_offer()
+	// grabs required variables, and enqueue's product scripts
 	public function product_offer(){
 		global $product;
 

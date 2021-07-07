@@ -51,6 +51,8 @@ class EWC_Contracts {
 		}
 	}
 
+	// extend_metabox()
+	// echos Contract data
 	public function extend_metabox(){
 		global $post;
 
@@ -83,17 +85,21 @@ class EWC_Contracts {
 
 	}
 
+	// meta_boxes()
+	// adds new meta box on orders for extend info
 	public function meta_boxes(){
+
 		add_meta_box('extend_metabox',
 			'Extend Info',
 			[$this, 'extend_metabox'],
 			'shop_order', 'side');
+
 	}
 
-	/**
-	 * @param $refund WC_Order_Refund
-	 * @param $args array
-	 */
+	// process_partial_refund($data, $cart_item)
+	// @param $refund : WC_Order_Refund
+	// @param $args : array of arguments
+	// processes partial refunds for contracts
 	public function process_partial_refund($refund, $args){
 
 		$order_id = $refund->get_parent_id();
@@ -119,22 +125,22 @@ class EWC_Contracts {
 
 	}
 
+	// maybe_send_contract($order_id)
+	// @param $order_id : Order transaction ID 
+	// sends contracts if they haven't been sent already
 	public function maybe_send_contract($order_id){
 
 		$sent = get_post_meta($order_id, '_extend_contracts', true);
 
 		if(!$sent){
-
 			$this->send_contracts($order_id);
 		}
 
 	}
 
-
-		/**
-	 * @param $order_id integer
-	 * @param $order WC_Order
-	 */
+	// send_contracts($order_id, $order)
+	// @param $order_id : Order transaction ID 
+	// @param $order : order object, default to null
 	private function send_contracts( $order_id, $order = null) {
 
 		if($order === null){
@@ -239,7 +245,9 @@ class EWC_Contracts {
 	}
 
 	
-
+	// process_full_refund($order_id)
+	// @param $order_id : Order transaction ID 
+	// processes full refund for orders
 	public function process_full_refund($order_id){
 
 		$contracts = get_post_meta($order_id, '_extend_contracts', true);
@@ -262,6 +270,9 @@ class EWC_Contracts {
 
 	}
 	
+	// capture_refund_data($data)
+	// @param $data : Refund data returned from Extend
+	// returns the status, and id of contracts
 	private function capture_refund_data($data){
 
 		$body = $data['response_body'];

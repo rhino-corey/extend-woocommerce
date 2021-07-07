@@ -51,6 +51,9 @@ class EWC_Product {
 		}
 	}
 
+	// save_variations($product_id)
+	// @param $product_id : Current Product Id
+	// updates the products variant id's
 	public function save_variations($product_id){
 
 		$product = wc_get_product($product_id);
@@ -64,6 +67,11 @@ class EWC_Product {
 
 	}
 
+	// addNewProduct($metaId, $postId, $metaKey)
+	// @param $metaId : Meta ID
+	// @param $postId : Product Post ID
+	// @param $metaKey : Type of action
+	// checks for products that have finished being edited.
 	public function addNewProduct($metaId, $postId, $metaKey){
 		if ( $metaKey == '_edit_lock' ) {
 			if ( get_post_type( $postId ) == 'product' ) { // we've been editing a product 
@@ -72,6 +80,9 @@ class EWC_Product {
 		}
 	}
 
+	// updateProduct($id)
+	// @param $id : Product Post Id
+	// adds products if they don't exist in Extend, and updates them if they do exist.
 	public function updateProduct($id){
 			
 			$data = $this->getProductData($id);
@@ -101,14 +112,10 @@ class EWC_Product {
 	}
 
 
-	/**
-	 * @param $product mixed
-	 *
-	 * @return array
-	 */
-
+	// getProductData($product)
+	// @param $product : ID of product, or WC_Product
+	// Build's out data array for products to be synced with Extend
 	private function getProductData($product = null){
-
 
 		if(is_numeric($product)){
 			$id = $product;
@@ -164,21 +171,17 @@ class EWC_Product {
 			$data['mfrWarranty']=$warranty;
 		}
 
-
 		$upc = get_post_meta($id, '_cpf_upc', true);
 		if($upc && strpos($upc, '000000')===false ){
 			$data['identifiers']['upc'] = $upc;
 		}
 
-
-			$data['parentReferenceId'] = $product->get_parent_id();
-
-
-
+		$data['parentReferenceId'] = $product->get_parent_id();
 
 		return $data;
 		
 	}
+
 
 	private function getPlain($html){
 		$text = preg_replace( "/\n\s+/", "\n", rtrim(html_entity_decode(strip_tags($html))) );
@@ -188,12 +191,10 @@ class EWC_Product {
 	}
 
 
-		/**
-	 * @param $id
-	 *
-	 * @return string
-	 */
-
+	
+	// getCategory($id)
+	// @param $id : Product Post ID
+	// Get's product category, and structures to usable data
 	private function getCategory($id){
 		
 		$primary_cat = get_post_meta($id, '_yoast_wpseo_primary_product_cat', true);
@@ -219,6 +220,8 @@ class EWC_Product {
 		
 	}
 
+	// get_variation_title($variation)
+	// @param $variation : Current Variant Object
 	public function get_variation_title($variation){
 		$attributes = $variation->get_variation_attributes();
 		$atts = [];
@@ -232,11 +235,9 @@ class EWC_Product {
 
 
 
-		/**
-	 * @param $product WC_Product
-	 *
-	 * @return bool
-	 */
+	// isEnabled($product)
+	// @param $product : WC_Product
+	// @return bool
 	private function isEnabled($product){
 		$enabled = true;
 

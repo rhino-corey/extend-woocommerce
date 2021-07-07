@@ -41,14 +41,30 @@ class EWC_Cart {
 	 * @since  0.0.0
 	 */
 	public function hooks() {
+		//after cart add cart offers
 		add_action('woocommerce_add_to_cart', [$this, 'add_to_cart'], 10, 6);
+
+		//change cart item names for warranty items 
 		add_filter('woocommerce_cart_item_name', [$this, 'cart_item_name'], 10, 3);
+
+		//change order item names for warranty items
 		add_filter('woocommerce_order_item_name', [$this, 'order_item_name'], 10, 3);
+
+		//update price for warranty items
 		add_action('woocommerce_before_calculate_totals', [$this, 'update_price']);
+
+		//set product and term data
 		add_filter('woocommerce_get_item_data', [$this, 'checkout_details'], 10, 2);
+
+		//add properties to warranty products
 		add_action('woocommerce_checkout_create_order_line_item', [$this, 'order_item_meta'], 10, 3);
 	}
 
+	// order_item_meta($item, $cart_item_key, $cart_item)
+	// @param $item : WC_Order_Item, represents order lineItem
+    // @param $cart_item_key : cart item unique key
+	// @param $cart_item : current cart item
+	// This function transfers data from cart items, to order items
 	public function order_item_meta($item, $cart_item_key, $cart_item ){
 		if(isset($cart_item['extendData'])){
 			$item->add_meta_data('_extend_data', $cart_item['extendData']);
@@ -71,6 +87,10 @@ class EWC_Cart {
 		}
 	}
 
+	// checkout_details($data, $cart_item)
+	// @param $data : order item data
+	// @param $cart_item : current cart item
+	// @return $data : returns modified item data
 	public function checkout_details($data, $cart_item){
 
 		if(!is_cart() && !is_checkout()){
@@ -94,11 +114,12 @@ class EWC_Cart {
 
 		}
 
-
-
 		return $data;
+
 	}
 
+	// update_price($cart_object)
+	// @param $cart_object : WC_Cart, represents current cart object
 	public function update_price($cart_object){
 		$cart_items = $cart_object->cart_contents;
 
@@ -113,15 +134,29 @@ class EWC_Cart {
 		}
 	}
 
+	// order_item_name($name, $cart_item, $cart_item_key)
+	// @param $name : current items name
+	// @param $cart_item : current cart item
+	// @param $cart_item_key : unique key
+	// @return $name or Extend Protection Plan for warranties
 	public function order_item_name($name, $cart_item, $cart_item_key){
+
 		$meta = $cart_item->get_meta('_extend_data');
 		if($meta){
 			return $meta['title'];
 		}
 
 		return $name;
+
 	}
 
+	// add_to_cart($cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data)
+	// @param $cart_item_key : unique key for cart item
+	// @param $product_id : current cart items product id
+	// @param $quantity : current cart items quantity
+	// @param $variation_id : current variant id
+	// @param $variation : current variant object
+	// @param $cart_item_data : data object for cart item
 	public function add_to_cart($cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data){
 
 		if(isset($_POST['planData'])){
@@ -134,9 +169,8 @@ class EWC_Cart {
 			$qty = filter_input(INPUT_POST, 'quantity');
 			try{
 
-					WC()->cart->add_to_cart($this->warranty_product_id, $qty, 0, 0, ['extendData'=>$plan] );
+				WC()->cart->add_to_cart($this->warranty_product_id, $qty, 0, 0, ['extendData'=>$plan] );
 				
-
 			}catch(Exception $e){
 				error_log($e->getMessage());
 			}
@@ -154,7 +188,6 @@ class EWC_Cart {
 
 		if(isset($cart_item_data['extendData'])){
 
-
 			$price = round($cart_item_data['extendData']['price']/100, 2);
 
 			WC()->cart->cart_contents[$cart_item_key]['data']->set_price($price);
@@ -163,12 +196,19 @@ class EWC_Cart {
 
 	}
 
+	// cart_item_name($name, $cart_item, $cart_item_key)
+	// @param $name : current items name
+	// @param $cart_item : current cart item
+	// @param $cart_item_key : unique key for cart item
+	// @return $name or new title for warranties
 	public function cart_item_name($name, $cart_item, $cart_item_key){
 
 		if(isset($cart_item['extendData'])){
 			$term = $cart_item['extendData']['term'];
 			return "Extend Protection Plan - {$term} Months";
 		}
+
 		return $name;
+
 	}
 }
