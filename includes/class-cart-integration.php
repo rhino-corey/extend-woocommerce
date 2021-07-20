@@ -101,6 +101,8 @@ class EWC_Cart_Integration {
 			}
 		}
 
+		$cart_balancing = get_option('wc_extend_cart_balancing_enabled');
+
 		//if we have products, go through each and check for updates
 		if(isset($products)){
 			foreach($products as $product){
@@ -124,6 +126,12 @@ class EWC_Cart_Integration {
 								$updates[$warranty['key']] = ['quantity'=>$warranty['quantity']-$removed_quantity];
 								$diff=$new_quantity_diff;
 							}
+						} elseif($cart_balancing == 'yes' && $diff<0){
+							foreach($product['warranties'] as $warranty){
+								$new_quantity = $warranty['quantity'] - $diff;
+								$updates[$warranty['key']] = ['quantity'=>$new_quantity];
+							}
+
 						}
 					}
 				}

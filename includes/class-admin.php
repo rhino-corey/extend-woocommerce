@@ -87,6 +87,11 @@ class EWC_Admin {
 				'id'	  => 'wc_extend_cart_offers_enabled',
 			),
 			array(
+				'title'	  => __( 'Enable Cart Balancing', 'extend-woocommerce' ),
+				'type'    => 'checkbox',
+				'id'	  => 'wc_extend_cart_balancing_enabled',
+			),
+			array(
 				'title'	  => __( 'Enable PDP Offers', 'extend-woocommerce' ),
 				'type'    => 'checkbox',
 				'id'	  => 'wc_extend_pdp_offers_enabled',

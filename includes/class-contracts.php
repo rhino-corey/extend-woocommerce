@@ -210,7 +210,7 @@ class EWC_Contracts {
 							'source'          => [
 								'agentId'      => '',
 								'channel'      => 'web',
-								'integratorId' => 'netsuite',
+								'integratorId' => 'woocommerce',
 								'locationId'   => $this->plugin->store_id,
 								'platform'     => 'woocommerce'
 							],
