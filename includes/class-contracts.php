@@ -154,7 +154,13 @@ class EWC_Contracts {
 
 		foreach ( $items as $item ) {
 			if ( intval($item->get_product_id()) === intval($this->warranty_product_id)) {
-				$contracts[] = $item;
+				$quantity = $item->get_quantity();
+				$item_id = $item->get_id();
+
+				for($q = 1; $q <= $quantity; $q++) {
+					$contracts[] = $item;
+				}
+
 			} else {
 				$prod_id = $item->get_variation_id()?$item->get_variation_id():$item->get_product_id();
 				$prices[$prod_id] = $item->get_subtotal() / $item->get_quantity();
@@ -229,7 +235,9 @@ class EWC_Contracts {
 
 					if(intval($res['response_code']) === 201){
 						$item->add_meta_data("Extend Status", $res['response_body']->status);
-						$contract_ids[$item_id]=	$res['response_body']->id;
+
+						$contract_ids[$item_id . '-' . $res['response_body']->id] =	$res['response_body']->id;
+
 					}
 
 				}
