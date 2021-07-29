@@ -62,7 +62,11 @@ class EWC_Product_Integration {
 			$ids = [$id];
 		}
 		if($store_id){
-			if($extend_enabled === 'yes') {
+			global $WOOCS;
+		
+			$current_currency = $WOOCS->current_currency;
+
+			if(($extend_enabled === 'yes') && ($current_currency === 'USD')) {
 				$extend_modal_offers_enabled = get_option('wc_extend_modal_offers_enabled');
 				wp_enqueue_script('extend_script');
 				wp_enqueue_script('extend_product_integration_script');

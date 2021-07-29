@@ -181,6 +181,7 @@ class EWC_Cart_Integration {
     // renders cart offers
 	public function cart_offers(){
 		$offers = [];
+		global $WOOCS;
 
 		$cart = WC()->cart;
 
@@ -199,10 +200,11 @@ class EWC_Cart_Integration {
 		$warranty_prod_id = $this->warranty_product_id;
 		
 		$environment = $this->plugin->env;
-			
+		
+		$current_currency = $WOOCS->current_currency;
 
 			$ids = array_unique($offers);
-			if($store_id && ($extend_enabled === 'yes')){
+			if($store_id && ($extend_enabled === 'yes') && ($current_currency === 'USD')){
 
 					wp_enqueue_script('extend_script');
 					wp_enqueue_script('extend_cart_integration_script');
