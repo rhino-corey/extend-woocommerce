@@ -440,7 +440,12 @@ final class Extend_WooCommerce {
 	 * @return boolean True if requirements are met.
 	 */
 	public function meets_requirements() {
+		global $WOOCS;
 
+		$current_currency = $WOOCS->current_currency;
+		if($current_currency != 'USD') {
+			return false;
+		}
 		// Do checks for required classes / functions or similar.
 		// Add detailed messages to $this->activation_errors array.
 		return true;
