@@ -50,7 +50,7 @@ jQuery(document).ready(function(){
     jQuery('form.cart').append('<input type="hidden" name="planData"  id="planData"/>');
 
 
-    jQuery('button.single_add_to_cart_button').on('click', function extendHandler(e) {
+    jQuery('button.add_to_cart_button').on('click', function extendHandler(e) {
         e.preventDefault()
 
         // /** get the component instance rendered previously */
@@ -63,8 +63,8 @@ jQuery(document).ready(function(){
         if (plan) {
 
             jQuery('#planData').val(JSON.stringify(plan));
-            jQuery('button.single_add_to_cart_button').off('click', extendHandler);
-            jQuery('button.single_add_to_cart_button').trigger('click');
+            jQuery('button.add_to_cart_button').off('click', extendHandler);
+            jQuery('button.add_to_cart_button').trigger('click');
 
         } else{
             if(jQuery('#planData').val()==='' && extend_modal_offers_enabled === 'yes'){
@@ -74,19 +74,19 @@ jQuery(document).ready(function(){
                         if (plan && product) {
                             jQuery('#planData').val(JSON.stringify(plan));
 
-                            jQuery('button.single_add_to_cart_button').off('click', extendHandler);
-                            jQuery('button.single_add_to_cart_button').trigger('click');
+                            jQuery('button.add_to_cart_button').off('click', extendHandler);
+                            jQuery('button.add_to_cart_button').trigger('click');
                         } else {
-                            jQuery('button.single_add_to_cart_button').off('click', extendHandler);
-                            jQuery('button.single_add_to_cart_button').trigger('click');
+                            jQuery('button.add_to_cart_button').off('click', extendHandler);
+                            jQuery('button.add_to_cart_button').trigger('click');
 
 
                         }
                     },
                 });
             } else {
-                jQuery('button.single_add_to_cart_button').off('click', extendHandler);
-                jQuery('button.single_add_to_cart_button').trigger('click');
+                jQuery('button.add_to_cart_button').off('click', extendHandler);
+                jQuery('button.add_to_cart_button').trigger('click');
             }
 
         }
