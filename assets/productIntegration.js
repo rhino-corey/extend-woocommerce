@@ -9,6 +9,9 @@ let extend_pdp_offers_enabled = window.WCExtend.extend_pdp_offers_enabled
 
 
 jQuery(document).ready(function(){
+
+    $('<style>').text("#extend-offers-modal-iframe {z-index: 999999999!important}#extend-learn-more-modal-iframe {z-index: 999999999!important}").appendTo(document.head)
+
     Extend.config({
         storeId: store_id ,
         environment: environment ,
