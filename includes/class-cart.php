@@ -219,7 +219,7 @@ class EWC_Cart {
 	public function cart_item_price($price, $cart_item, $cart_item_key) {
 		if(isset($cart_item['extendData'])) {
 			$price = round($cart_item['extendData']['price']/100, 2);
-			return "${$price}";
+			return "\${$number}";
 		}
 		return $price;
 	}
