@@ -128,8 +128,11 @@ class EWC_Cart_Integration {
 							}
 						} elseif($cart_balancing == 'yes' && $diff<0){
 							foreach($product['warranties'] as $warranty){
+								$new_quantity_diff = max([0, $diff - $warranty['quantity']]);
+
 								$new_quantity = $warranty['quantity'] - $diff;
 								$updates[$warranty['key']] = ['quantity'=>$new_quantity];
+								$diff=$new_quantity_diff;
 							}
 
 						}
@@ -221,12 +224,38 @@ class EWC_Cart_Integration {
 
 		if($product_id === intval($this->warranty_product_id)){
 
-			$unique_cart_item_key = md5( microtime() . rand() );
-			$cart_item_data['unique_key'] = $unique_cart_item_key;
+			$product_reference_id_to_check = $cart_item_data['extendData']['covered_product_id'];
+			$plan_id_to_check = $cart_item_data['extendData']['planId'];
+
+			$existingProduct = null;
+
+			foreach(WC()->cart->get_cart_contents() as $line){
+				//if we're on a warranty item
+				if(intval($line['product_id']) === intval($this->warranty_product_id) && isset($line['extendData'])){
+					//Grab reference id
+					$product_reference_id = $line['extendData']['covered_product_id'];
+
+					$plan_id = $line['extendData']['planId'];
+
+					if(($product_reference_id_to_check === $product_reference_id) && ($plan_id_to_check === $plan_id)){
+						$existingProduct = $line;
+					}
+				}
+			}
+
+			if(isset($existingProduct)){
+				
+				$unique_cart_item_key = $existingProduct['unique_key'];
+
+				$cart_item_data['unique_key'] = $unique_cart_item_key;
+			}else {
+				$unique_cart_item_key = md5( microtime() . rand() );
+				$cart_item_data['unique_key'] = $unique_cart_item_key;
+			}
 	
 		}
 
-			return $cart_item_data;
+		return $cart_item_data;
 
-		}
+	}
 }
