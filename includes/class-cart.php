@@ -47,6 +47,9 @@ class EWC_Cart {
 		//change cart item names for warranty items 
 		add_filter('woocommerce_cart_item_name', [$this, 'cart_item_name'], 10, 3);
 
+		//change mini cart item price for warranty items
+		add_filter('woocommerce_cart_item_price', [$this, 'cart_item_price'], 10, 3);
+
 		//change order item names for warranty items
 		add_filter('woocommerce_order_item_name', [$this, 'order_item_name'], 10, 3);
 
@@ -210,5 +213,14 @@ class EWC_Cart {
 
 		return $name;
 
+	}
+
+
+	public function cart_item_price($price, $cart_item, $cart_item_key) {
+		if(isset($cart_item['extendData'])) {
+			$price = round($cart_item['extendData']['price']/100, 2);
+			return $price;
+		}
+		return $price;
 	}
 }
