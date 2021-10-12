@@ -19,8 +19,10 @@ WooCommerce plugin to connect Extend and enable WooCommerce merchants to sell ex
 1. Upload the entire `/extend-woocommerce` directory to the `/wp-content/plugins/` directory.
 2. Activate Extend WooCommerce through the 'Plugins' menu in WordPress.
 3. Create Extend Product in WooCommerce and copy the Product ID and set the image to be the Extend Logo
-    * Note: The price and title does not play a factor here. We change the title and price depending on the plan that is selected. Make sure the **Regular Price** is at least set, 
+    * Note: The price and title does not play a factor here. We change the title and price depending on the plan that is selected. Make sure the **Regular Price** is at least set to $1.
+
     * Catalog Visibility: Ensure to set the **Catalog visibility: Hidden** underneath the "Publish" Section. This ensures that customers cannot navigate to the Warranty product page, and ensures that the Warranty will not be shown on collection pages. 
+    
 4. Navigate to Extend settings via **WooCommerce** -> **Settings** -> **Products** -> **Extend Settings**
 5. Enable Extend, and configure settings to the sites needing.
 5. Set the environment, Extend store id, and API Key. Set the Product ID from the Extend Product to the Coverage Product Id.
