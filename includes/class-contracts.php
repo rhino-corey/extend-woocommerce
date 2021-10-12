@@ -209,7 +209,7 @@ class EWC_Contracts {
 								'referenceId'   => $covered_id,
 								'purchasePrice' => [
 									'currencyCode' => 'USD',
-									'amount'       => $prices[ $covered_id ] * 100
+									'amount'       => round($prices[ $covered_id ] * 100, 0)
 								]
 							],
 							'currency'        => 'USD',
