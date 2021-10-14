@@ -65,6 +65,7 @@ jQuery(document).ready(function(){
             jQuery('#planData').val(JSON.stringify(plan));
             jQuery('button.single_add_to_cart_button').off('click', extendHandler);
             jQuery('button.single_add_to_cart_button').trigger('click');
+            jQuery('button.single_add_to_cart_button').on('click', extendHandler);
 
         } else{
             if(jQuery('#planData').val()==='' && extend_modal_offers_enabled === 'yes'){
@@ -76,9 +77,11 @@ jQuery(document).ready(function(){
 
                             jQuery('button.single_add_to_cart_button').off('click', extendHandler);
                             jQuery('button.single_add_to_cart_button').trigger('click');
+                            jQuery('button.single_add_to_cart_button').on('click', extendHandler);
                         } else {
                             jQuery('button.single_add_to_cart_button').off('click', extendHandler);
                             jQuery('button.single_add_to_cart_button').trigger('click');
+                            jQuery('button.single_add_to_cart_button').on('click', extendHandler);
 
 
                         }
@@ -87,6 +90,7 @@ jQuery(document).ready(function(){
             } else {
                 jQuery('button.single_add_to_cart_button').off('click', extendHandler);
                 jQuery('button.single_add_to_cart_button').trigger('click');
+                jQuery('button.single_add_to_cart_button').on('click', extendHandler);
             }
 
         }
