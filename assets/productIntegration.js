@@ -41,8 +41,11 @@ jQuery(document).ready(function(){
 
             jQuery( ".single_variation_wrap" ).on( "show_variation", function ( event, variation )  {
                 let component = Extend.buttons.instance('#extend-offer');
-                product_id = variation.variation_id;
-                component.setActiveProduct(variation.variation_id)
+                variation_id = variation.variation_id;
+
+                if(variation_id) {
+                    component.setActiveProduct(variation.variation_id)
+                }
             } );
 
     }
