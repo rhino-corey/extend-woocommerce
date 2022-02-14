@@ -39,7 +39,7 @@ class EWC_Product_Integration {
 	 * @since  0.0.0
 	 */
 	public function hooks() {
-		add_action('woocommerce_before_add_to_cart_form', [$this, 'product_offer']);
+		add_action('woocommerce_before_add_to_cart_button', [$this, 'product_offer']);
 	}
 
 	// product_offer()
