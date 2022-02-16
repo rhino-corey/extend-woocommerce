@@ -62,13 +62,14 @@ jQuery(document).ready(function () {
         var addToCartButton = jQuery(productForm).find('button.single_add_to_cart_button');
 
         addToCartButton.on('click', function extendHandler(e) {
-            e.preventDefault()
+            e.preventDefault();
+            e.stopPropagation();
 
             /** get the users plan selection */
-            const plan = extendOffer.getPlanSelection();
-            const product = extendOffer.getActiveProduct();
+            const plan = Extend.buttons.instance(extendOffer).getPlanSelection();
+            const product = Extend.buttons.instance(extendOffer).getActiveProduct();
 
-            if (plan) {
+            if (plan && product) {
 
                 jQuery(productForm).find('#planData').val(JSON.stringify(plan));
                 addToCartButton.off('click', extendHandler);
