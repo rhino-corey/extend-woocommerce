@@ -70,6 +70,17 @@ jQuery( document.body ).on( 'updated_cart_totals', function(){
                 });
             })
     })
+
+    jQuery('.cart_item').each(function(ix, val){
+        var title = jQuery(val).find('.product-name');
+        var image = jQuery(val).find('.product-thumbnail')
+        if(title.text().indexOf('Extend Protection Plan') > -1){
+            image.css('pointer-events', 'none')
+			var priceEl = val.querySelector('.product-price');
+			priceEl.innerText = '$' + priceEl.innerText;
+			priceEl.style.fontWeight = 'bold';
+        }
+    })
 });
 
 jQuery(document).ready(function() {
