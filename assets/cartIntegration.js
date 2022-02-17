@@ -84,6 +84,9 @@ jQuery(document).ready(function() {
         var image = jQuery(val).find('.product-thumbnail')
         if(title.text().indexOf('Extend Protection Plan') > -1){
             image.css('pointer-events', 'none')
+            var priceEl = val.querySelector('.product-price');
+			priceEl.innerText = '$' + priceEl.innerText;
+			priceEl.style.fontWeight = 'bold';
         }
     })
 

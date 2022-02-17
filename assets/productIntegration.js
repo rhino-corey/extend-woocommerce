@@ -15,7 +15,7 @@ jQuery(document).ready(function () {
         referenceIds: product_ids
     });
 
-    //find all product forms
+    //find all product forms 
     //for each PF, find .extend-offer div, do logic below
 
     var productForms = document.querySelectorAll('.elementor-widget-wc-add-to-cart');
