@@ -94,6 +94,8 @@ jQuery(document).ready(function() {
         var title = jQuery(val).find('.product-name');
         var image = jQuery(val).find('.product-thumbnail')
         if(title.text().indexOf('Extend Protection Plan') > -1){
+            title[0].querySelector('dd.variation-Term').remove();
+			title[0].querySelector('dt.variation-Term').remove();
             image.css('pointer-events', 'none')
             var priceEl = val.querySelector('.product-price');
 			priceEl.innerText = '$' + priceEl.innerText;
