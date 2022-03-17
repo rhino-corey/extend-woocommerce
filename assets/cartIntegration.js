@@ -24,7 +24,27 @@ function warrantyAlreadyInCheckout (variantId, cart) {
     return extendWarranties.length > 0;
 }
 
+function formatWarranties() {
+	jQuery('.cart_item').each(function(ix, val){
+		var title = jQuery(val).find('.product-name');
+		var image = jQuery(val).find('.product-thumbnail')
+		if(title.text().indexOf('Extend Protection Plan') > -1){
+			var info = title.find('.variation');
+			var price = title.find('.mobile-product-price');
+			title.html(title.text().substring(0, title.text().indexOf(' -')));
+			title.append(info, price);
+			image.css('pointer-events', 'none');
+			var priceEl = val.querySelector('.product-price');
+			priceEl.innerText = '$' + priceEl.innerText;
+			priceEl.style.fontWeight = 'bold';
+			priceEl.style.color = 'black';
+		}
+	})
+}
+
 jQuery( document.body ).on( 'updated_cart_totals', function(){
+	formatWarranties();
+	
     jQuery('.cart-extend-offer').each(function(ix, val){
         let ref_id =  jQuery(val).data('covered');
         let qty = jQuery(val).parents('.cart_item').find('input.qty').val();
@@ -79,22 +99,7 @@ jQuery(document).ready(function() {
         referenceIds: product_ids
     });
 
-    jQuery('.cart_item').each(function(ix, val){
-        var title = jQuery(val).find('.product-name');
-        var image = jQuery(val).find('.product-thumbnail');
-        if(title.text().indexOf('Extend Protection Plan') > -1){
-            var info = title.find('.variation');
-			var price = title.find('.mobile-product-price');
-			title.html(title.text().substring(0, title.text().indexOf(' -')));
-            title.append(info, price);
-			image.css('pointer-events', 'none');
-			var priceEl = val.querySelector('.product-price');
-			priceEl.innerText = '$' + priceEl.innerText;
-            priceEl.style.fontWeight = 'bold';
-        }
-        }
-    })
-
+    formatWarranties();
 
     jQuery('.cart-extend-offer').each(function(ix, val){
         let ref_id =  jQuery(val).data('covered');

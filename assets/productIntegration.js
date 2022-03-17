@@ -33,16 +33,16 @@ jQuery(document).ready(function(){
             let variation_id = jQuery('[name="variation_id"]').val();
             if(variation_id ) {
                 let comp = Extend.buttons.instance('#extend-offer');
-                    comp.setActiveProduct(variation_id)
+                    comp.setActiveProduct(product_id)
             }
-            }, 500);
+            }, 1000);
 
 
 
             jQuery( ".single_variation_wrap" ).on( "show_variation", function ( event, variation )  {
                 let component = Extend.buttons.instance('#extend-offer');
                 variation_id = variation.variation_id;
-
+				
                 if(variation_id) {
                     component.setActiveProduct(variation.variation_id)
                 }
@@ -51,7 +51,10 @@ jQuery(document).ready(function(){
     }
 
     jQuery('form.cart').append('<input type="hidden" name="planData"  id="planData"/>');
-
+	//jQuery('.sticky-add-to-cart #extend-offer').remove();
+	var styleEl = document.createElement('style');
+	styleEl.innerHTML = '.sticky-add-to-cart--active > #extend-offer { display: none;}';
+	document.head.appendChild(styleEl);
 
     jQuery('button.single_add_to_cart_button').on('click', function extendHandler(e) {
         e.preventDefault()
