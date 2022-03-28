@@ -6,9 +6,9 @@ let warranty_prod_id = window.WCCartExtend.warranty_prod_id;
 let extend_cart_offers_enabled = window.WCCartExtend.extend_cart_offers_enabled
 
 function warrantyAlreadyInCheckout (variantId, cart) {
-     var checkoutItems = Object.values(cart['cart_contents']);
+    var checkoutItems = Object.values(cart['cart_contents']);
     const extendWarranties = checkoutItems.filter(function (lineItem) {
-//filter through the customAttributes and grab the referenceId
+        //filter through the customAttributes and grab the referenceId
         var extendData = lineItem.extendData;
         if (extendData && extendData['covered_product_id'])
             var referenceId = extendData['covered_product_id'];
