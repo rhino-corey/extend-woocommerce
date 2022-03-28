@@ -48,7 +48,7 @@ class EWC_Cart_Integration {
 		add_action('woocommerce_after_cart', [$this, 'cart_offers']);
 
 		//after cart item name add offer element
-		add_action('woocommerce_after_cart_item_name', [$this, 'after_cart_item_name'], 10, 2);
+		add_action('extend_render_cart_offer', [$this, 'after_cart_item_name'], 10, 2);
 
 		//ensure unique cart items for warranties
 		add_filter('woocommerce_add_cart_item_data', [$this, 'unique_cart_items'], 10, 2);
@@ -62,6 +62,12 @@ class EWC_Cart_Integration {
 		//get cart for users with permissions
 		add_action('wp_ajax_get_cart', [$this, 'get_cart']);
 
+		//get cart for users without permissions
+		add_action('wp_ajax_nopriv_add_to_cart_extend', [$this, 'add_to_cart_extend']);
+
+		//get cart for users with permissions
+		add_action('wp_ajax_add_to_cart_extend', [$this, 'add_to_cart_extend']);
+
 	}
 
 	// get_cart()
@@ -70,6 +76,14 @@ class EWC_Cart_Integration {
 		$cart = WC()->cart;
 		echo json_encode($cart, JSON_PRETTY_PRINT);
 		die();
+	}
+
+	public static function add_to_cart_extend(){
+		$product_id = $_REQUEST['product_id'];
+		$quantity = $_REQUEST['quantity'];
+		$extend_data = $_REQUEST['extendData'];
+		WC()->cart->add_to_cart( $product_id, $quantity, 0, 0, ['extendData' => $extend_data]);
+	    die();
 	}
 
 	// get_cart_updates()
@@ -206,11 +220,11 @@ class EWC_Cart_Integration {
 
 			$ids = array_unique($offers);
 			if($store_id && ($extend_enabled === 'yes')){
-
+					$add_to_cart_url = plugin_dir_url(__DIR__) . '../woocommerce/assets/js/frontend/add-to-cart.min.js';
 					wp_enqueue_script('extend_script');
 					wp_enqueue_script('extend_cart_integration_script');
 					$ajaxurl = admin_url( 'admin-ajax.php' );
-					wp_localize_script('extend_cart_integration_script', 'WCCartExtend', compact('store_id',  'ids', 'environment', 'warranty_prod_id', 'cart', 'ajaxurl', 'extend_cart_offers_enabled'));
+					wp_localize_script('extend_cart_integration_script', 'WCCartExtend', compact('store_id',  'ids', 'environment', 'warranty_prod_id', 'cart', 'ajaxurl', 'extend_cart_offers_enabled', 'add_to_cart_url') );
 			
 			}
 
