@@ -48,28 +48,13 @@ class EWC_Cart_Integration {
 		add_action('woocommerce_after_cart', [$this, 'cart_offers']);
 
 		//after cart item name add offer element
-		add_action('woocommerce_after_cart_item_name', [$this, 'after_cart_item_name'], 10, 2);
+		add_action('extend_render_cart_offer', [$this, 'after_cart_item_name'], 10, 2);
 
 		//ensure unique cart items for warranties
 		add_filter('woocommerce_add_cart_item_data', [$this, 'unique_cart_items'], 10, 2);
 
 		//run normalization on check
 		add_action('woocommerce_check_cart_items', [$this, 'normalize_cart']);
-
-		//get cart for users without permissions
-		add_action('wp_ajax_nopriv_get_cart', [$this, 'get_cart']);
-
-		//get cart for users with permissions
-		add_action('wp_ajax_get_cart', [$this, 'get_cart']);
-
-	}
-
-	// get_cart()
-    // echos the cart to be used on the FE from ajax request
-	public static function get_cart(){
-		$cart = WC()->cart;
-		echo json_encode($cart, JSON_PRETTY_PRINT);
-		die();
 	}
 
 	// get_cart_updates()
@@ -195,24 +180,15 @@ class EWC_Cart_Integration {
 			}
 		}
 
-		$store_id = get_option('wc_extend_store_id');
 		$extend_enabled = get_option('wc_extend_enabled');
 		$extend_cart_offers_enabled = get_option('wc_extend_cart_offers_enabled');
 
-		$warranty_prod_id = $this->warranty_product_id;
-		
-		$environment = $this->plugin->env;
-			
-
-			$ids = array_unique($offers);
-			if($store_id && ($extend_enabled === 'yes')){
-
-					wp_enqueue_script('extend_script');
-					wp_enqueue_script('extend_cart_integration_script');
-					$ajaxurl = admin_url( 'admin-ajax.php' );
-					wp_localize_script('extend_cart_integration_script', 'WCCartExtend', compact('store_id',  'ids', 'environment', 'warranty_prod_id', 'cart', 'ajaxurl', 'extend_cart_offers_enabled'));
-			
-			}
+		if($extend_enabled === 'yes'){
+			wp_enqueue_script('extend_script');
+			wp_enqueue_script('extend_cart_integration_script');
+			$ajaxurl = admin_url( 'admin-ajax.php' );
+			wp_localize_script('extend_cart_integration_script', 'ExtendCartIntegration', compact('cart', 'extend_cart_offers_enabled'));
+		}
 
 	}
 
