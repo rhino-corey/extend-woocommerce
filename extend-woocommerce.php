@@ -300,11 +300,7 @@ final class Extend_WooCommerce {
 		if ( $response_body ) {
 			$j = json_decode( $response_body );
 
-			
-
 			if ( $j ) $response_body = $j;
-
-			$this->write_log($response_body);
 		}
 
 		// Return this information in the same format for success or error. Includes debugging information.
@@ -349,11 +345,9 @@ final class Extend_WooCommerce {
 			return;
 		}
 
-		// $this->redirect("https://www.google.com");
 		// Make sure any rewrite functionality has been loaded.
 		flush_rewrite_rules();
 	}
-
 
 	/**
 	 * Deactivate the plugin.
