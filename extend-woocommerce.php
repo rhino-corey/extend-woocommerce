@@ -53,7 +53,6 @@ function extend_woocommerce_autoload_classes( $class_name ) {
 
 	// Set up our filename.
 	$filename = strtolower( str_replace( '_', '-', substr( $class_name, strlen( 'EWC_' ) ) ) );
-
 	// Include our file.
 	Extend_WooCommerce::include_file( 'includes/class-' . $filename );
 }
@@ -146,6 +145,14 @@ final class Extend_WooCommerce {
 	 */
 	protected $admin;
 
+	/**
+	 * Instance of EWC_Global
+	 *
+	 * @since0.0.0
+	 * @var EWC_Global
+	 */
+	protected $global;
+
 	/*
 	 * api_host = extend api URL dependant on environment
 	 * env = demo or production extend environment
@@ -230,6 +237,7 @@ final class Extend_WooCommerce {
 		$this->cart = new EWC_Cart( $this );
 		$this->product = new EWC_Product( $this );
 		$this->admin = new EWC_Admin( $this );
+		$this->global = new EWC_Global( $this );
 		$this->product_integration = new EWC_Product_Integration( $this );
 		$this->cart_integration = new EWC_Cart_Integration( $this );
 	} // END OF PLUGIN CLASSES FUNCTION
@@ -292,7 +300,11 @@ final class Extend_WooCommerce {
 		if ( $response_body ) {
 			$j = json_decode( $response_body );
 
+			
+
 			if ( $j ) $response_body = $j;
+
+			$this->write_log($response_body);
 		}
 
 		// Return this information in the same format for success or error. Includes debugging information.
@@ -320,6 +332,7 @@ final class Extend_WooCommerce {
 	
 	public function scripts(){
 		wp_register_script('extend_script', $this->sdk_url);
+		wp_register_script('extend_global_script', $this->url . 'assets/global.js', ['jquery', 'extend_script'], filemtime($this->path .'assets/global.js' ), true);
 		wp_register_script('extend_product_integration_script', $this->url . 'assets/productIntegration.js', ['jquery', 'extend_script'], filemtime($this->path .'assets/productIntegration.js' ));
 		wp_register_script('extend_cart_integration_script', $this->url . 'assets/cartIntegration.js', ['jquery', 'extend_script'], filemtime($this->path .'assets/cartIntegration.js' ), true);
 	}
@@ -336,9 +349,11 @@ final class Extend_WooCommerce {
 			return;
 		}
 
+		// $this->redirect("https://www.google.com");
 		// Make sure any rewrite functionality has been loaded.
 		flush_rewrite_rules();
 	}
+
 
 	/**
 	 * Deactivate the plugin.
@@ -445,7 +460,6 @@ final class Extend_WooCommerce {
 		// Add detailed messages to $this->activation_errors array.
 		return true;
 	}
-
 	
 
 	/**
@@ -495,6 +509,7 @@ final class Extend_WooCommerce {
 			case 'cart':
 			case 'product':
 			case 'admin':
+			case 'global':
 			case 'store_id':
 			case 'env':
 			case 'product_integration':

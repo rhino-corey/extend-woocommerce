@@ -49,28 +49,17 @@ class EWC_Product_Integration {
 
 		$id = $product->get_id();
 
-		$store_id = get_option('wc_extend_store_id');
 		$type = $product->get_type();
+
 		$extend_enabled = get_option('wc_extend_enabled');
-		
-		$environment = $this->plugin->env;
 		$extend_pdp_offers_enabled = get_option('wc_extend_pdp_offers_enabled');
+		$extend_modal_offers_enabled = get_option('wc_extend_modal_offers_enabled');
 
-		if($type === 'variable'){
-			$ids = $product->get_children();
-		}else{
-			$ids = [$id];
+		if($extend_enabled === 'yes') {
+			wp_enqueue_script('extend_script');
+			wp_enqueue_script('extend_product_integration_script');
+			wp_localize_script('extend_product_integration_script', 'ExtendProductIntegration', compact('id', 'type', 'extend_modal_offers_enabled', 'extend_pdp_offers_enabled'));
+			echo "<div id=\"extend-offer\"></div>";
 		}
-		if($store_id){
-			if($extend_enabled === 'yes') {
-				$extend_modal_offers_enabled = get_option('wc_extend_modal_offers_enabled');
-				wp_enqueue_script('extend_script');
-				wp_enqueue_script('extend_product_integration_script');
-				wp_localize_script('extend_product_integration_script', 'WCExtend', compact('store_id', 'id', 'type', 'ids', 'environment', 'extend_modal_offers_enabled', 'extend_pdp_offers_enabled'));
-				echo "<div id=\"extend-offer\"></div>";
-			}
-		}
-
-
 	}
 }
