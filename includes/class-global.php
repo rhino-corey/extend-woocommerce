@@ -72,7 +72,7 @@ class EWC_Global {
 			return;
 		}
 
-		$cart_item_key = WC()->cart->add_to_cart( $warranty_product_id, $quantity, 0, 0, ['extendData' => $extend_data]);
+		WC()->cart->add_to_cart( $warranty_product_id, $quantity, 0, 0, ['extendData' => $extend_data]);
 	}
 
 	public function init_global_extend() {

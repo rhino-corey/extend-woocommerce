@@ -161,6 +161,18 @@ class EWC_Cart {
 	// @param $variation : current variant object
 	// @param $cart_item_data : data object for cart item
 	public function add_to_cart($cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data){
+		
+		// If extendData exists in POST request, and might not exist in cart_item_data
+		if(isset($_POST['extendData'])){
+
+			$plan = $_POST['extendData'];
+			WC()->cart->cart_contents[$cart_item_key]['extendData'] = $plan;
+			$price = round($plan['price']/100, 2);
+
+			WC()->cart->cart_contents[$cart_item_key]['data']->set_price($price);
+
+		}
+		
 		if(isset($cart_item_data['extendData'])){
 
 			$price = round($cart_item_data['extendData']['price']/100, 2);
@@ -190,7 +202,7 @@ class EWC_Cart {
 	public function cart_item_price($price, $cart_item, $cart_item_key) {
 		if(isset($cart_item['extendData'])) {
 			$price = round($cart_item['extendData']['price']/100, 2);
-			return $price;
+			return wc_price($price);
 		}
 		return $price;
 	}
