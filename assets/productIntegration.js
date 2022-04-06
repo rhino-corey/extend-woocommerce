@@ -1,19 +1,7 @@
-let store_id = window.WCExtend.store_id;
-let product_type = window.WCExtend.type;
-let product_id = window.WCExtend.id;
-let product_ids = window.WCExtend.ids;
-let environment = window.WCExtend.environment;
-let extend_modal_offers_enabled = window.WCExtend.extend_modal_offers_enabled
-let extend_pdp_offers_enabled = window.WCExtend.extend_pdp_offers_enabled
-
-
-
 jQuery(document).ready(function(){
-    Extend.config({
-        storeId: store_id ,
-        environment: environment ,
-        referenceIds: product_ids
-    });
+	if(!ExtendWooCommerce || !ExtendProductIntegration) return;
+
+	const { type: product_type, id: product_id, extend_modal_offers_enabled, extend_pdp_offers_enabled } = ExtendProductIntegration;
 
     if(extend_pdp_offers_enabled === 'no'){
         var extendOffer = document.querySelector('#extend-offer')
@@ -25,6 +13,7 @@ jQuery(document).ready(function(){
             referenceId: product_id,
         })
     }else{
+
         Extend.buttons.render('#extend-offer', {
             referenceId: product_id,
         });
@@ -35,26 +24,27 @@ jQuery(document).ready(function(){
                 let comp = Extend.buttons.instance('#extend-offer');
                     comp.setActiveProduct(variation_id)
             }
-            }, 500);
+		}, 500);
 
+		jQuery( ".single_variation_wrap" ).on( "show_variation", function ( event, variation )  {
+			let component = Extend.buttons.instance('#extend-offer');
+			variation_id = variation.variation_id;
 
-
-            jQuery( ".single_variation_wrap" ).on( "show_variation", function ( event, variation )  {
-                let component = Extend.buttons.instance('#extend-offer');
-                variation_id = variation.variation_id;
-
-                if(variation_id) {
-                    component.setActiveProduct(variation.variation_id)
-                }
-            } );
+			if(variation_id) {
+				component.setActiveProduct(variation.variation_id)
+			}
+		});
 
     }
 
-    jQuery('form.cart').append('<input type="hidden" name="planData"  id="planData"/>');
-
-
     jQuery('button.single_add_to_cart_button').on('click', function extendHandler(e) {
-        e.preventDefault()
+		e.preventDefault()
+
+		function triggerAddToCart() {
+			jQuery('button.single_add_to_cart_button').off('click', extendHandler);
+			jQuery('button.single_add_to_cart_button').trigger('click');
+			jQuery('button.single_add_to_cart_button').on('click', extendHandler);
+		}
 
         // /** get the component instance rendered previously */
         const component = Extend.buttons.instance('#extend-offer');
@@ -64,41 +54,38 @@ jQuery(document).ready(function(){
         const product = component.getActiveProduct();
 
         if (plan) {
-
-            jQuery('#planData').val(JSON.stringify(plan));
-            jQuery('button.single_add_to_cart_button').off('click', extendHandler);
-            jQuery('button.single_add_to_cart_button').trigger('click');
-            jQuery('button.single_add_to_cart_button').on('click', extendHandler);
-
+			var planCopy = { ...plan, covered_product_id: product.id }
+			var data = {
+				quantity: 1,
+				plan: planCopy
+			}
+			ExtendWooCommerce.addPlanToCart(data)
+				.then(() => {
+					triggerAddToCart()
+				})
         } else{
-            if(jQuery('#planData').val()==='' && extend_modal_offers_enabled === 'yes'){
+            if(extend_modal_offers_enabled === 'yes'){
                 Extend.modal.open({
-                    referenceId: product_id,
+                    referenceId: product.id,
                     onClose: function(plan, product) {
                         if (plan && product) {
-                            jQuery('#planData').val(JSON.stringify(plan));
-
-                            jQuery('button.single_add_to_cart_button').off('click', extendHandler);
-                            jQuery('button.single_add_to_cart_button').trigger('click');
-                            jQuery('button.single_add_to_cart_button').on('click', extendHandler);
+							var planCopy = { ...plan, covered_product_id: product.id }
+							var data = {
+								quantity: 1,
+								plan: planCopy
+							}
+							ExtendWooCommerce.addPlanToCart(data)
+								.then(() => {
+									triggerAddToCart()
+								})
                         } else {
-                            jQuery('button.single_add_to_cart_button').off('click', extendHandler);
-                            jQuery('button.single_add_to_cart_button').trigger('click');
-                            jQuery('button.single_add_to_cart_button').on('click', extendHandler);
-
-
+                            triggerAddToCart()
                         }
                     },
                 });
             } else {
-                jQuery('button.single_add_to_cart_button').off('click', extendHandler);
-                jQuery('button.single_add_to_cart_button').trigger('click');
-                jQuery('button.single_add_to_cart_button').on('click', extendHandler);
+                triggerAddToCart()
             }
-
         }
-
-
     });
-
 });

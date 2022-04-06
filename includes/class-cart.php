@@ -59,8 +59,6 @@ class EWC_Cart {
 		//set product and term data
 		add_filter('woocommerce_get_item_data', [$this, 'checkout_details'], 10, 2);
 
-
-
 		//add properties to warranty products
 		add_action('woocommerce_checkout_create_order_line_item', [$this, 'order_item_meta'], 10, 3);
 	}
@@ -163,24 +161,8 @@ class EWC_Cart {
 	// @param $variation : current variant object
 	// @param $cart_item_data : data object for cart item
 	public function add_to_cart($cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data){
-
-		if(isset($_POST['planData'])){
-			$plan = json_decode(str_replace('\\', '', $_POST['planData']), true);
-			unset($_POST['planData']);
-			if(empty($plan)){
-				return;
-			}
-			$plan['covered_product_id'] = $variation_id?$variation_id: $product_id;
-			$qty = filter_input(INPUT_POST, 'quantity');
-			try{
-
-				WC()->cart->add_to_cart($this->warranty_product_id, $qty, 0, 0, ['extendData'=>$plan] );
-				
-			}catch(Exception $e){
-				error_log($e->getMessage());
-			}
-		}
-
+		
+		// If extendData exists in POST request, and might not exist in cart_item_data
 		if(isset($_POST['extendData'])){
 
 			$plan = $_POST['extendData'];
@@ -190,7 +172,7 @@ class EWC_Cart {
 			WC()->cart->cart_contents[$cart_item_key]['data']->set_price($price);
 
 		}
-
+		
 		if(isset($cart_item_data['extendData'])){
 
 			$price = round($cart_item_data['extendData']['price']/100, 2);
@@ -220,7 +202,7 @@ class EWC_Cart {
 	public function cart_item_price($price, $cart_item, $cart_item_key) {
 		if(isset($cart_item['extendData'])) {
 			$price = round($cart_item['extendData']['price']/100, 2);
-			return $price;
+			return wc_price($price);
 		}
 		return $price;
 	}
