@@ -3,7 +3,20 @@ jQuery(document).ready(function(){
 
     const { type: product_type, id: product_id, extend_modal_offers_enabled, extend_pdp_offers_enabled } = ExtendProductIntegration;
 
-    if (extend_pdp_offers_enabled === 'no') {
+    let hasVariations = document.querySelector(".variations_form");
+    let requiredVariantsDone = false;
+
+    if (!hasVariations) {
+        requiredVariantsDone = true;
+    }
+
+    setTimeout(function() {
+        $(".variations_form").on("woocommerce_variation_select_change", function() {
+            requiredVariantsDone = true;
+        });
+    }, 500)
+    
+    if(extend_pdp_offers_enabled === 'no') {
         var extendOffer = document.querySelector('#extend-offer');
         extendOffer.style.display = 'none';
     }
@@ -12,7 +25,7 @@ jQuery(document).ready(function(){
         Extend.buttons.render('#extend-offer', {
             referenceId: product_id,
         })
-    }else{
+    } else {
 
         Extend.buttons.render('#extend-offer', {
             referenceId: product_id,
@@ -22,7 +35,7 @@ jQuery(document).ready(function(){
             let variation_id = jQuery('[name="variation_id"]').val();
             if(variation_id) {
                 let comp = Extend.buttons.instance('#extend-offer');
-                comp.setActiveProduct(`${variation_id}`)
+                comp.setActiveProduct(variation_id);
             }
         }, 500);
 
@@ -64,7 +77,7 @@ jQuery(document).ready(function(){
                   triggerAddToCart()
               })
         } else{
-            if(extend_modal_offers_enabled === 'yes'){
+            if(extend_modal_offers_enabled === 'yes' && requiredVariantsDone ){
                 Extend.modal.open({
                     referenceId: product.id,
                     onClose: function(plan, product) {
