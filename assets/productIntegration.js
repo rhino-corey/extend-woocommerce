@@ -13,25 +13,19 @@ jQuery(document).ready(function(){
             referenceId: product_id,
         })
     }else{
-
-        Extend.buttons.render('#extend-offer', {
+		
+		window.setTimeout(function() {
+	        Extend.buttons.render('#extend-offer', {
             referenceId: product_id,
-        });
+        	});
+		}, 500)
 
-        setTimeout(function(){
-            let variation_id = jQuery('[name="variation_id"]').val();
-            if(variation_id ) {
-                let comp = Extend.buttons.instance('#extend-offer');
-                    comp.setActiveProduct(variation_id)
-            }
-		}, 500);
 
 		jQuery( ".single_variation_wrap" ).on( "show_variation", function ( event, variation )  {
 			let component = Extend.buttons.instance('#extend-offer');
 			variation_id = variation.variation_id;
-
 			if(variation_id) {
-				component.setActiveProduct(variation.variation_id)
+				component.setActiveProduct(`${variation_id}`)
 			}
 		});
 
