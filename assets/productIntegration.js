@@ -22,7 +22,10 @@ jQuery(document).ready(function(){
             let variation_id = jQuery('[name="variation_id"]').val();
             if(variation_id ) {
                 let comp = Extend.buttons.instance('#extend-offer');
-                    comp.setActiveProduct(variation_id)
+
+                if ( comp ) {
+	                comp.setActiveProduct( variation_id )
+                }
             }
 		}, 500);
 
@@ -30,8 +33,8 @@ jQuery(document).ready(function(){
 			let component = Extend.buttons.instance('#extend-offer');
 			variation_id = variation.variation_id;
 
-			if(variation_id) {
-				component.setActiveProduct(variation.variation_id)
+			if ( component && variation_id ) {
+				component.setActiveProduct( variation.variation_id.toString() )
 			}
 		});
 
